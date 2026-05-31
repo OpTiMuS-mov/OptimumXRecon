@@ -49,7 +49,7 @@ OptimumXRecon helps security enthusiasts, students, and researchers gather infor
 
 ### Port Scanner
 
-![Port Scanner](screenshots/ports.png)
+![Port Scanner](screenshots/port.png)
 
 ---
 
