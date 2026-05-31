@@ -37,19 +37,19 @@ OptimumXRecon helps security enthusiasts, students, and researchers gather infor
 
 ### WHOIS Lookup
 
-![WHOIS Lookup](assets/whois.png)
+![WHOIS Lookup](screenshots/whois.png)
 
 ### SSL Certificate Analysis
 
-![SSL Certificate Analysis](assets/ssl.png)
+![SSL Certificate Analysis](screenshots/ssl.png)
 
 ### VirusTotal Analysis
 
-![VirusTotal Analysis](assets/vt.png)
+![VirusTotal Analysis](screenshots/vt.png)
 
 ### Port Scanner
 
-![Port Scanner](assets/ports.png)
+![Port Scanner](screenshots/ports.png)
 
 ---
 
