@@ -17,7 +17,7 @@ def main():
 
     parser.add_argument("--target", help="Target domain, IP, or URL")
     parser.add_argument("--dns", action="store_true", help="Run DNS lookup")
-    parser.add_argument("--ports", help="scan ports")
+    parser.add_argument("--ports", help="Scan ports")
     parser.add_argument("--whois", action="store_true", help="Run WHOIS lookup")
     parser.add_argument("--ssl", action="store_true", help="Run SSL/TLS check")
     parser.add_argument("--headers", action="store_true", help="Run HTTP header analysis")
