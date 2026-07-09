@@ -34,7 +34,7 @@ def get_virustotal_info(domain):
 
     table.add_row("[cyan]reputation", str(reputation))
     table.add_row("[red]Malicious", str(stats["malicious"]))
-    table.add_row("[yellow]Suspicious", str(stats["suspicious"]))
+    table.add_row("[orange]Suspicious", str(stats["suspicious"]))
     table.add_row("[green]Harmless", str(stats["harmless"]))
 
     console.print(table)

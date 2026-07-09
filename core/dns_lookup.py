@@ -4,6 +4,8 @@ from utils.console import console
 def get_dns_records(target):
     record_types = ["A", "MX", "NS"]
 
+    records = {"A": [], "MX": [], "NS": []}
+
     for record in record_types:
         console.print(f"\n[blue]{record} Records:[/blue]")
 
@@ -12,6 +14,11 @@ def get_dns_records(target):
 
             for answer in answers:
                 console.print(f"[green]{answer}[/green]")
+                records[record].append(answer)
 
         except Exception:
             console.print(f"[red]No {record} records found[/red]")
+
+    return records
+print(type(dns_data))
+print(type(dns_data["A"][0]))
