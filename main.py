@@ -1,13 +1,13 @@
 import argparse
 from utils.validators import validate_target
-from core.dns_lookup import get_dns_records
-from core.port_scanner import scan_ports 
-from core.whois_lookup import get_whois_info
-from core.ssl_checker import get_ssl_info
-from core.header_analyzer import get_header_info
-from core.tech_fingerprint import get_tech_info
-from core.subdomain_enum import get_subdomains
-from core.virustotal_lookup import get_virustotal_info
+from core.dns_lookup import get_dns_info , display_dns_info
+from core.port_scanner import scan_ports , display_ports
+from core.whois_lookup import get_whois_info, display_whois_table
+from core.ssl_checker import get_ssl_info , display_ssl_info
+from core.header_analyzer import get_header_info , display_header_info
+from core.tech_fingerprint import get_tech_info , display_tech_info
+from core.subdomain_enum import get_subdomains , display_subdomains
+from core.virustotal_lookup import get_virustotal_info , display_virustotal_info
 
 def main():
     parser = argparse.ArgumentParser(
@@ -33,21 +33,29 @@ def main():
     print("Target:", args.target)
 
     if args.dns:
-        get_dns_records(args.target)
+        dns_data = get_dns_info(args.target)
+        display_dns_info(dns_data)
     if args.ports:
-        scan_ports(args.target,args.ports)
+        scan_data = scan_ports(args.target,args.ports)
+        display_ports(scan_data)
     if args.vt:
-        get_virustotal_info(args.target)
+        vt_data = get_virustotal_info(args.target)
+        display_virustotal_info(vt_data)
     if args.ssl:
-        get_ssl_info(args.target)
+        ssl_data = get_ssl_info(args.target)
+        display_ssl_info(ssl_data)
     if args.whois:
-        get_whois_info(args.target)
+        whois_data = get_whois_info(args.target)
+        display_whois_table(whois_data)
     if args.headers:
-        get_header_info(args.target)
+        header_data = get_header_info(args.target)
+        display_header_info(header_data)
     if args.tech:
-        get_tech_info(args.target)
+        tech_data = get_tech_info(args.target)
+        display_tech_info(tech_data)
     if args.subdomains:
-        get_subdomains(args.target)
+        subdomain_data = get_subdomains(args.target)
+        display_subdomains(subdomain_data)
 
 if __name__ == "__main__":
     main()

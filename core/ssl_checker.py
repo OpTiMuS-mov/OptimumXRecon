@@ -1,29 +1,63 @@
 import socket
 import ssl
-from utils.console import console
 from rich.table import Table
+from utils.console import console
+
 
 def get_ssl_info(target):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    context = ssl.create_default_context()
-    secure_sock = context.wrap_socket(sock, server_hostname=target)
-    secure_sock.connect((target, 443))
+    
+    #Fetch SSL/TLS certificate information from the target.
+    #Returns a normalized dictionary or None if an error occurs.
+    
 
-    cert = secure_sock.getpeercert()
-    issuer = dict(x[0] for x in cert["issuer"])
-    subject = dict(x[0] for x in cert["subject"])
+    context = ssl.create_default_context()
+
+    try:
+        with socket.create_connection((target, 443), timeout=5) as sock:
+            with context.wrap_socket(sock, server_hostname=target) as secure_sock:
+
+                cert = secure_sock.getpeercert()
+
+                issuer = dict(x[0] for x in cert.get("issuer", []))
+                subject = dict(x[0] for x in cert.get("subject", []))
+
+                return {
+                    "issuer_org": issuer.get("organizationName"),
+                    "subject_cn": subject.get("commonName"),
+                    "not_before": cert.get("notBefore"),
+                    "not_after": cert.get("notAfter"),
+                    "version": cert.get("version"),
+                    "serial_number": cert.get("serialNumber"),
+                }
+
+    except Exception as e:
+        console.print(f"[red]SSL Error:[/red] {e}")
+        return None
+
+
+def display_ssl_info(ssl_data):
+    """
+    Display SSL certificate information in a Rich table.
+    """
+
+    if ssl_data is None:
+        return
 
     table = Table(title="SSL/TLS Certificate Information")
-    table.add_column("Fields")
-    table.add_column("Value")
 
-    table.add_row("Issuer Org", str(issuer.get('organizationName')))
-    table.add_row("Subject Common Name", str(subject.get('commonName')))
-    table.add_row("Not Before", str(cert['notBefore']))
-    table.add_row("Not After", str(cert['notAfter']))
-    table.add_row("Version", str(cert['version']))
-    table.add_row("Serial Number", str(cert['serialNumber']))
-    
+    table.add_column("Field", style="cyan")
+    table.add_column("Value", style="green")
+
+    rows = [
+        ("Issuer Organization", ssl_data["issuer_org"]),
+        ("Subject Common Name", ssl_data["subject_cn"]),
+        ("Valid From", ssl_data["not_before"]),
+        ("Valid Until", ssl_data["not_after"]),
+        ("Version", ssl_data["version"]),
+        ("Serial Number", ssl_data["serial_number"]),
+    ]
+
+    for field, value in rows:
+        table.add_row(field, str(value))
+
     console.print(table)
-    secure_sock.close()
-
