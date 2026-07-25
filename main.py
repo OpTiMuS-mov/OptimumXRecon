@@ -8,6 +8,8 @@ from core.header_analyzer import get_header_info , display_header_info
 from core.tech_fingerprint import get_tech_info , display_tech_info
 from core.subdomain_enum import get_subdomains , display_subdomains
 from core.virustotal_lookup import get_virustotal_info , display_virustotal_info
+from core.full_scan import run_full_scan
+from reports.html_reports import generate_html_report
 
 def main():
     parser = argparse.ArgumentParser(
@@ -24,6 +26,8 @@ def main():
     parser.add_argument("--tech", action="store_true", help="Run technology fingerprinting")
     parser.add_argument("--subdomains", action="store_true", help="Run subdomain enumeration")
     parser.add_argument("--vt", action="store_true", help="Run VirusTotal lookup")
+    parser.add_argument("--report", action="store_true", help="Generate HTML report")
+    parser.add_argument("--full", action="store_true", help="Run all scans and generate report")
 
     args = parser.parse_args()
     if not validate_target(args.target):
@@ -32,30 +36,48 @@ def main():
 
     print("Target:", args.target)
 
-    if args.dns:
-        dns_data = get_dns_info(args.target)
-        display_dns_info(dns_data)
-    if args.ports:
-        scan_data = scan_ports(args.target,args.ports)
-        display_ports(scan_data)
-    if args.vt:
-        vt_data = get_virustotal_info(args.target)
-        display_virustotal_info(vt_data)
-    if args.ssl:
-        ssl_data = get_ssl_info(args.target)
-        display_ssl_info(ssl_data)
-    if args.whois:
-        whois_data = get_whois_info(args.target)
-        display_whois_table(whois_data)
-    if args.headers:
-        header_data = get_header_info(args.target)
-        display_header_info(header_data)
-    if args.tech:
-        tech_data = get_tech_info(args.target)
-        display_tech_info(tech_data)
-    if args.subdomains:
-        subdomain_data = get_subdomains(args.target)
-        display_subdomains(subdomain_data)
+    results = {"target": args.target}
+
+    if args.full:
+        results = run_full_scan(args.target)
+    else:
+        if args.dns:
+            dns_data = get_dns_info(args.target)
+            display_dns_info(dns_data)
+            results["dns"] = dns_data
+        if args.ports:
+            scan_data = scan_ports(args.target,args.ports)
+            display_ports(scan_data)
+            results["ports"] = scan_data
+        if args.vt:
+            vt_data = get_virustotal_info(args.target)
+            display_virustotal_info(vt_data)
+            results["virustotal"] = vt_data
+        if args.ssl:
+            ssl_data = get_ssl_info(args.target)
+            display_ssl_info(ssl_data)
+            results["ssl"] = ssl_data
+        if args.whois:
+            whois_data = get_whois_info(args.target)
+            display_whois_table(whois_data)
+            results["whois"] = whois_data
+        if args.headers:
+            header_data = get_header_info(args.target)
+            display_header_info(header_data)
+            results["headers"] = header_data
+        if args.tech:
+            tech_data = get_tech_info(args.target)
+            display_tech_info(tech_data)
+            results["technology"] = tech_data
+        if args.subdomains:
+            subdomain_data = get_subdomains(args.target)
+            display_subdomains(subdomain_data)
+            results["subdomains"] = subdomain_data
+
+    if args.report:
+        output_file = generate_html_report(results, "report.html")
+        print(f"\nReport saved to: {output_file}")
 
 if __name__ == "__main__":
     main()
+    

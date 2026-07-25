@@ -55,7 +55,6 @@ def get_whois_info(domain):
 
 
 def display_whois_table(whois_data):
-    console.print("display_whois_table() called")
     if whois_data is None:
         return
 

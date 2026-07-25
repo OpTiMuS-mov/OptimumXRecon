@@ -29,7 +29,12 @@ def get_virustotal_info(domain):
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
 
-        attributes = response.json()["data"]["attributes"]
+        data = response.json().get("data", {})
+        attributes = data.get("attributes", {})
+
+        if not attributes:
+            console.print("[red]VirusTotal Error:[/red] Unexpected API response structure.")
+            return None
 
         stats = attributes.get("last_analysis_stats", {})
 
@@ -43,7 +48,7 @@ def get_virustotal_info(domain):
             "timeout": stats.get("timeout", 0),
         }
 
-    except requests.RequestException as e:
+    except (requests.RequestException, ValueError) as e:
         console.print(f"[red]VirusTotal Error:[/red] {e}")
         return None
 

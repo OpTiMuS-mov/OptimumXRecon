@@ -18,11 +18,46 @@ def scan_port(target, port):
 
 
 def scan_ports(target, ports):
-    if "-" in ports:
-        start, end = map(int, ports.split("-"))
-        ports = range(start, end + 1)
-    else:
-        ports = [int(ports)]
+    try:
+        if "-" in ports:
+            parts = ports.split("-")
+            if len(parts) != 2:
+                console.print("[red]Invalid port format.[/red] Use PORT or START-END.")
+                return {
+                    "target": target,
+                    "scan_type": "TCP Connect",
+                    "ports_scanned": 0,
+                    "open_ports": []
+                }
+            start, end = int(parts[0]), int(parts[1])
+            if start < 1 or end > 65535 or start > end:
+                console.print("[red]Invalid port range.[/red] Use 1-65535.")
+                return {
+                    "target": target,
+                    "scan_type": "TCP Connect",
+                    "ports_scanned": 0,
+                    "open_ports": []
+                }
+            ports = range(start, end + 1)
+        else:
+            port = int(ports)
+            if port < 1 or port > 65535:
+                console.print("[red]Invalid port.[/red] Use 1-65535.")
+                return {
+                    "target": target,
+                    "scan_type": "TCP Connect",
+                    "ports_scanned": 0,
+                    "open_ports": []
+                }
+            ports = [port]
+    except ValueError:
+        console.print("[red]Invalid port input.[/red] Use PORT or START-END (e.g. 80 or 1-1000).")
+        return {
+            "target": target,
+            "scan_type": "TCP Connect",
+            "ports_scanned": 0,
+            "open_ports": []
+        }
 
     open_ports = []
 
@@ -54,6 +89,6 @@ def display_ports(scan_data):
         for port in scan_data["open_ports"]:
             table.add_row(str(port), "OPEN")
     else:
-        table.add_row("No open ports found")
+        table.add_row("No open ports found", "-")
 
     console.print(table)
